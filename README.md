@@ -1,0 +1,62 @@
+# DevFest Piura — Facturación electrónica
+
+## Sobre el proyecto
+
+Este proyecto nace como una demostración para DevFest Piura: una aplicación web para administrar productos, registrar ventas y mostrar el flujo de emisión de comprobantes electrónicos en Perú.
+
+Su propósito es educativo y práctico. Permite recorrer la configuración del emisor, preparar facturas y boletas, generar documentos XML UBL 2.1, firmarlos digitalmente y comunicarse directamente con SUNAT desde los servicios de la aplicación. Incluye una interfaz sencilla para consultar ventas, estados y representaciones impresas.
+
+La aplicación está desarrollada con Laravel 12, PHP 8.5 y MySQL. El entorno BETA sirve para pruebas; antes de emitir comprobantes reales se deben configurar las credenciales SOL y el certificado digital del emisor, y validar el flujo conforme a los requisitos vigentes de SUNAT.
+
+## Funcionalidades
+
+- Inicio de sesión y configuración inicial del emisor.
+- Administración de productos y servicios.
+- Registro de facturas y boletas, con cálculo de IGV al 18 %.
+- Generación de XML UBL 2.1 y firma digital.
+- Envío individual a SUNAT mediante SOAP y `sendBill`.
+- Lectura de respuestas y CDR.
+- Representación impresa en PDF y ticket de 80 mm.
+- Consulta del estado de los comprobantes enviados anteriormente mediante ticket, cuando corresponda.
+
+## Requisitos
+
+- PHP 8.5 con las extensiones `dom`, `openssl`, `zip` y `pdo_mysql` habilitadas.
+- Composer 2.
+- Node.js y npm.
+- MySQL.
+
+## Instalación local
+
+Crea la base de datos MySQL `devfest_facturacion_electronica` y configura las variables de conexión en `.env`. Luego ejecuta:
+
+```powershell
+Copy-Item .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+npm run build
+php artisan db:seed
+php artisan serve
+```
+
+El seeder crea el usuario y dos productos de muestra; no registra ventas. Credenciales locales: `admin@devfest.test` / `123456789`.
+
+Abre `http://devfest-facturacion-electronica.test/` si usas Laragon, o `http://127.0.0.1:8000/` con `artisan serve`.
+
+## Configuración SUNAT
+
+Completa los datos del emisor y el entorno desde **Configuración**. El código del local anexo tiene como valor inicial `0000`. En BETA, la aplicación usa las credenciales de prueba `MODDATOS` y permite preparar un certificado demo para firmar documentos de prueba. Para producción, configura las credenciales SOL y carga el certificado digital real asociado al RUC emisor.
+
+La configuración de SUNAT se guarda cifrada en MySQL y el certificado se almacena en una ubicación privada. El usuario SOL se ingresa sin anteponer nuevamente el RUC. No uses credenciales ni certificados reales en pruebas.
+
+## Estructura principal
+
+- `app/Http/Controllers`: controladores de ventas, productos y configuración.
+- `app/Models`: modelos de usuarios, productos, comprobantes y configuración SUNAT.
+- `app/Services/Sunat`: generación, firma, envío SOAP y procesamiento de respuestas.
+- `app/Sunat/Templates/invoice.php`: plantilla PHP para construir el XML UBL 2.1 de facturas y boletas.
+- `resources/views`: pantallas de la aplicación y formatos de representación.
+- `database/migrations`: estructura de la base de datos.
+
+La integración debe validarse en el entorno de pruebas de SUNAT antes de utilizarse en producción.
