@@ -60,3 +60,32 @@ La configuración de SUNAT se guarda cifrada en MySQL y el certificado se almace
 - `database/migrations`: estructura de la base de datos.
 
 La integración debe validarse en el entorno de pruebas de SUNAT antes de utilizarse en producción.
+
+## Prueba del bot de Telegram
+
+1. Crea un bot con [@BotFather](https://t.me/BotFather) y copia su token directamente en `TOKEN_TLG` dentro de `.env` (no lo compartas ni lo subas a Git).
+2. En una terminal, desde la carpeta del proyecto, ejecuta `php artisan telegram:poll`.
+3. Abre el chat con tu bot y envíale `/start`. El bot responderá con el ID de ese chat.
+4. Copia ese ID en `TELEGRAM_CHAT_ID` en `.env`, detén el comando con `Ctrl+C` y vuelve a ejecutar `php artisan telegram:poll`.
+5. Envía `/cmds` para ver los comandos disponibles o `/ventas_hoy` para consultar el número de comprobantes y el total registrado hoy.
+
+El bot solo comparte datos de ventas con el ID configurado. La primera respuesta de `/start` muestra únicamente el ID necesario para configurar el acceso.
+
+### Comandos propuestos para ampliar el bot
+
+Comandos implementados:
+
+- `/cmds` — muestra el resumen de comandos disponibles, con ejemplos.
+- `/ventas_hoy` — total y cantidad de comprobantes registrados hoy.
+- `/ventas_semana` — total y cantidad de comprobantes desde el lunes.
+- `/ventas_mes` — total y cantidad de comprobantes del mes.
+- `/ultimas_ventas` — comprobantes con serie, número, cliente, total y estado, en páginas de cinco.
+- `/estado F001-25` — busca un comprobante por serie y número.
+- `/clientes_mes` — muestra los cinco clientes con mayor monto facturado este mes.
+- `/productos` — productos más vendidos del mes por unidades.
+
+Al enviar `/cmds`, el bot muestra un teclado persistente con los comandos en dos columnas. Toca una opción para ejecutar la consulta. El botón `/estado` pide la serie y el número en un mensaje aparte; también se puede consultar directamente con `/estado F001-25`. Si el bot ya estaba corriendo, reinicia `php artisan telegram:poll` para cargar los cambios.
+
+Las respuestas presentan títulos y cifras importantes en negrita para facilitar su lectura en Telegram.
+
+En `/ultimas_ventas` y `/estado`, cada comprobante incluye botones para recibir su PDF o XML firmado directamente en Telegram. La lista usa flechas para avanzar y retroceder entre páginas de cinco. El PDF se genera al solicitarlo; el XML se puede compartir después de que el sistema lo haya firmado y guardado.

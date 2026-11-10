@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'telegram' => [
+        'token' => env('TOKEN_TLG'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
 ];

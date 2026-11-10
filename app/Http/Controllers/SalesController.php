@@ -249,7 +249,8 @@ class SalesController extends Controller
         $descriptionRows = collect($document->lines)->sum(
             fn (array $line): int => max(1, (int) ceil(mb_strlen((string) $line['description']) / 30)),
         );
-        $paperHeight = max(430, 360 + ($descriptionRows * 24) + (count($document->lines) * 18));
+
+        $paperHeight = max(680, 600 + ($descriptionRows * 24) + (count($document->lines) * 18));
         $qrBase64 = null;
         $settingsRuc = preg_replace('/\D+/', '', (string) $settings['ruc']);
 
