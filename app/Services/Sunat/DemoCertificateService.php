@@ -40,7 +40,7 @@ class DemoCertificateService
         $privateKeyPem = '';
         $certificatePem = '';
 
-        if ($certificate === false || ! openssl_pkey_export($privateKey, $privateKeyPem) || ! openssl_x509_export($certificate, $certificatePem)) {
+        if ($certificate === false || ! openssl_pkey_export($privateKey, $privateKeyPem, null, $opensslOptions) || ! openssl_x509_export($certificate, $certificatePem)) {
             throw new RuntimeException('No se pudo preparar el certificado PEM de pruebas.');
         }
 
